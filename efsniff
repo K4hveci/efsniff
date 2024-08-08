@@ -1,0 +1,26 @@
+#! /usr/bin/python3
+
+import scapy.all as scapy
+from scapy_http import http
+import optparse as opt
+
+def get_parameters():
+    parse_obj = opt.OptionParser()
+    parse_obj.add_option("-i", "--interface", dest="interface", help="interface to change")
+
+    #get interface from parameter
+    (user_inputs, arguments) = parse_obj.parse_args()
+    user_interface = user_inputs.interface
+    return user_interface
+
+def start_sniff(interface):
+    scapy.sniff(iface=interface, store=False, prn=analyzing_packs())
+
+def analyzing_packs(pack):
+    if pack.haslayer(http.HTTPrequest):
+        if pack.haslayer(scapy.Raw):
+            print(pack[scapy.Raw].load)
+
+def __main__():
+    user_interface = get_parameters()
+    start_sniff(user_interface)
